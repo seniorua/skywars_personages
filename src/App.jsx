@@ -4,6 +4,9 @@ export const App = () => {
   const [count, setCount] = useState(0);
   const [number, setNumber] = useState(80);
   const [personage, setPersonage] = useState({});
+  const [buttonClicked, setButtonClicked] = useState(false);
+  const [el, setEl] = useState([]);
+
   const up = () => {
     setNumber((prev) => {
       if (prev === count) return prev;
@@ -17,6 +20,39 @@ export const App = () => {
       return prev - 1;
     });
   };
+
+  const showAll = () => {
+    if (!buttonClicked) setButtonClicked(true);
+  };
+
+  useEffect(() => {
+    let arr = [];
+    if (buttonClicked) {
+      console.log("show all");
+      for (let i = 1; i <= count; i++) {
+        fetch(`https://swapi.dev/api/people/${i}`)
+          .then((data) => data.json())
+          .then((data) => {
+            // Почему мой промис не записывается в массив так просто как 
+            // в переменную аrr?
+            arr[i] = data;
+            // Я вообще запутался как записывать из useState в массивы, в объекты,
+            // в массивы объектов... где квадратные скобки где круглые,
+            // где фирурные, где надо return где не надо... 
+            // сокращенная форма спреда...
+            // почему оно не записывает в массив объектов ниже?
+            // он у меня пустой а если объект всех элементов без цикла тогда пишет,
+            // а по одному не пишет... то пишет то не пишет... а теперь вообще нет
+            setEl((prev) => [
+              ...prev,
+              data
+            ]);
+          });
+        }
+        console.log('arr: ', arr);
+        console.log('el: ', el);
+      }
+  }, [buttonClicked]);
 
   useEffect(() => {
     fetch(`https://swapi.dev/api/people/`)
@@ -40,6 +76,7 @@ export const App = () => {
         });
       });
   }, [number]);
+
   return (
     <div className="app">
       <div className="skywars">
@@ -50,6 +87,9 @@ export const App = () => {
           <input className="number" type="text" value={number} />
           <button className="plus" onClick={up}>
             +
+          </button>
+          <button className="show" onClick={showAll}>
+            Show all
           </button>
         </div>
         <div className="data">
@@ -67,6 +107,7 @@ export const App = () => {
           </div>
         </div>
       </div>
+      <div className="personage-list skywars"></div>
     </div>
   );
 };
