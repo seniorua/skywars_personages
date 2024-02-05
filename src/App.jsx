@@ -24,34 +24,16 @@ export const App = () => {
   const showAll = () => {
     if (!buttonClicked) setButtonClicked(true);
   };
-
+// ****************************************
   useEffect(() => {
-    let arr = [];
-    if (buttonClicked) {
-      console.log("show all");
-      for (let i = 1; i <= count; i++) {
-        fetch(`https://swapi.dev/api/people/${i}`)
+        fetch(`https://swapi.dev/api/people/`)
           .then((data) => data.json())
           .then((data) => {
-            // Почему мой промис не записывается в массив так просто как
-            // в переменную аrr?
-            arr[i] = data;
-            // Я вообще запутался как записывать из useState в массивы, в объекты,
-            // в массивы объектов... где квадратные скобки где круглые,
-            // где фирурные, где надо return где не надо...
-            // сокращенная форма спреда...
-            // почему оно не записывает в массив объектов ниже?
-            // он у меня пустой а если объект всех элементов без цикла тогда пишет,
-            // а по одному не пишет... то пишет то не пишет... а теперь вообще нет
-            // Пока дописал это уже создало массив объектов через промис...
-            // через 5 минут
-            setEl((prev) => [...prev, data]);
+            setEl(data.results);
+            console.log('data.res: ', data.results);
+            console.log('el: ', el);
           });
-      }
-      console.log("arr: ", arr);
-      console.log("el: ", el);
-    }
-  }, [buttonClicked]);
+  }, []);
 
   useEffect(() => {
     fetch(`https://swapi.dev/api/people/`)
@@ -106,7 +88,9 @@ export const App = () => {
           </div>
         </div>
       </div>
-      <div className="personage-list skywars"></div>
+      {buttonClicked && <div className="personage-list skywars">
+        {el.map(item => {return <div id="item.name">{item.name}</div>})}
+      </div>}
     </div>
   );
 };
